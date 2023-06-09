@@ -6,8 +6,11 @@ import { useEffect, useState } from 'react';
 const AvailableMeals = () => {
   const [meals, setMeals] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [isError, setIsError] = useState(false);
   useEffect(() => {
     setIsLoading(true);
+    setIsError(false);
     const loadedMeals = [];
     fetch('https://food-order-app-81819-default-rtdb.firebaseio.com/meals.json')
       .then((response) => response.json())
@@ -24,6 +27,11 @@ const AvailableMeals = () => {
         }
         setMeals(loadedMeals);
         setIsLoading(false);
+      })
+      .catch((error) => {
+        setErrorMessage(error.message);
+        setIsLoading(false);
+        setIsError(true);
       });
   }, []);
 
@@ -40,8 +48,9 @@ const AvailableMeals = () => {
   return (
     <section className={classes.meals}>
       <Card>
+        {isError && <p>{errorMessage}</p>}
         {isLoading && <p>Loading meals</p>}
-        <ul>{mealsList}</ul>
+        {mealsList !== 0 && <ul>{mealsList}</ul>}
       </Card>
     </section>
   );
